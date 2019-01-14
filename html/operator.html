@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>彩播 - 刮票端</title>
+    <style type="text/css">
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        #videos {
+            position: absolute;
+            left: 30%;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            overflow: auto;
+        }
+
+        #videos img {
+            display: inline-block;
+            width: 32%;
+        }
+
+        #chat {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 30%;
+            border: 1px solid #0f0f0f;
+        }
+
+        #chat .msgIpt,
+        #chat .fileIpt {
+            position: absolute;
+            left: 0;
+            width: 80%;
+        }
+
+        #chat .sendBtn,
+        #chat .screenshotBtn {
+            position: absolute;
+            left: 80%;
+            width: 20%;
+        }
+
+        #chat .msgIpt,
+        #chat .sendBtn {
+            bottom: 0;
+        }
+
+        #chat .fileIpt,
+        #chat .screenshotBtn {
+            bottom: 30px;
+        }
+
+        #chat .msgs {
+            padding: 5%;
+        }
+
+        #chat .msgs p {
+            margin: 0.3em 0;
+        }
+
+        #files {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20%;
+        }
+
+        #files .percent {
+            font-weight: bold;
+            text-decoration: none
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chat">
+        <div class="msgs" id="msgs"></div>
+        <input type="text" id="msgIpt" class="msgIpt">
+        <button id="sendBtn" class="sendBtn">发送</button>
+        <button id="screenshotBtn" class="screenshotBtn">保存截图</button>
+    </div>
+    <div id="videos">
+        <img id="me" src="images/transparency.png" crossorigin="anonymous">
+        <!-- <canvas id="canvas"></canvas> -->
+    </div>
+    <div id="files">
+    </div>
+</body>
+
+<script src="js/mjpeg-stream.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    // 获取url参数
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return ("");
+    }
+
+    // 初始化MJPEGStream
+    var mjpeg = MJPEGStream();
+
+    // WebSocket连接成功
+    mjpeg.on("socket_opened", function (socket) {
+        document.getElementById('me').src = "http://localhost:8080/camera/mjpeg";
+    });
+
+    // WebSocket连接断开
+    mjpeg.on("socket_closed", function (socket) {
+        document.getElementById('me').src = "images/transparency.png";
+        // 重新连接
+        console.log('Socket is closed. Reconnect will be attempted in 1 second.');
+        setTimeout(function () {
+            mjpeg.connect("wss://liveserver.local:7443", getQueryVariable("room"), getQueryVariable("window"));
+        }, 1000);
+    });
+
+    // 连接WebSocket服务器
+    mjpeg.connect("wss://liveserver.local:7443", getQueryVariable("room"), getQueryVariable("window"));
+</script>
+
+<script type="text/javascript">
+    var image = document.getElementById('me');
+    var canvas = document.createElement('canvas');
+    var a = document.createElement('a');
+
+    var button = document.getElementById("screenshotBtn");
+    button.onclick = function () {
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // 下载截图
+        var url = canvas.toDataURL('image/jpeg');
+        a.href = url;
+        a.download = '彩票ID.jpg';
+        a.click();
+    };
+</script>
+
+</html>

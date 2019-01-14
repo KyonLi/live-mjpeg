@@ -1,0 +1,158 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>彩播 - 主播端</title>
+    <script src="js/jquery-1.6.2.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <!-- 捕获推流区 -->
+    <div id="screen" style="background-color: black; width: 1280px; height: 720px; position: absolute; left: 0px; top: 0px">
+
+        <img src='images/top.png' />
+
+        <!-- 主播区 -->
+        <div id="caster" style="width: 539px; height: 400px; position: absolute; left: 0px; bottom: 0px; overflow: hidden">
+
+            <video id="casterVideo" playsinline autoplay style="width: 150%; height: 150%; object-fit: cover; position: relative; left: -25%; top: -25%;"></video>
+        </div>
+
+        <!-- 刮票区 -->
+        <div id="operators" style="background-color: black; width: 741px; height: 400px; position: absolute; left: 539px; bottom: 0px">
+
+            <div id="operator1" style="width: 247px; height: 133px; position: absolute; left: 0px; top: 0px; overflow: hidden">
+                <!-- <img src='images/username.png' style='width:130px;height:auto;position:absolute;left:0px;top:0px' /> -->
+                <img id="video1" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_one.png' style='position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator2" style="width: 247px; height: 133px; position: absolute; left: 247px; top: 0px; overflow: hidden">
+
+                <img id="video2" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_two.png' style='position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator3" style="width: 247px; height: 133px; position: absolute; left: 494px; top: 0px; overflow: hidden">
+
+                <img id="video3" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_three.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator4" style="width: 247px; height: 133px; position: absolute; left: 0px; top: 133px; overflow: hidden">
+
+                <img id="video4" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_four.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator5" style="width: 247px; height: 133px; position: absolute; left: 247px; top: 133px; overflow: hidden">
+
+                <img id="video5" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_five.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator6" style="width: 247px; height: 133px; position: absolute; left: 494px; top: 133px; overflow: hidden">
+
+                <img id="video6" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_six.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator7" style="width: 247px; height: 133px; position: absolute; left: 0px; top: 266px; overflow: hidden">
+
+                <img id="video7" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_seven.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator8" style="width: 247px; height: 133px; position: absolute; left: 247px; top: 266px; overflow: hidden">
+
+                <img id="video8" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_eight.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+            <div id="operator9" style="width: 247px; height: 133px; position: absolute; left: 494px; top: 266px; overflow: hidden">
+
+                <img id="video9" src="images/transparency.png" style="width: 100%; height: 100%; object-fit: cover">
+                <!-- <img src='images/socket_nine.png' style='position:absolute;right:0px;bottom:0px' /> -->
+                <!-- <img src='images/cover.png' style='width:100%;height:100%;position:absolute;right:0px;bottom:0px' /> -->
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+<script src="js/mjpeg-stream.js" type="text/javascript"></script>
+<script type="text/javascript">
+    // 获取url参数
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return ("");
+    }
+
+    // 初始化MJPEGStream
+    var mjpeg = MJPEGStream();
+
+    //WebSocket连接成功
+    mjpeg.on("socket_opened", function (socket) {
+        //创建本地视频流
+        if (document.getElementById('casterVideo').srcObject == null) {
+            mjpeg.createStream({
+                "video": true,
+                "audio": false
+            });
+        }
+    });
+
+    //WebSocket连接断开
+    mjpeg.on("socket_closed", function (socket) {
+        //重新连接
+        console.log('Socket is closed. Reconnect will be attempted in 1 second.');
+        setTimeout(function () {
+            mjpeg.connect("wss://liveserver.local:7443", getQueryVariable("room"), getQueryVariable("window"));
+        }, 1000);
+    });
+
+    //创建本地视频流成功
+    mjpeg.on("stream_created", function (stream) {
+        document.getElementById('casterVideo').srcObject = stream;
+    });
+
+    //创建本地视频流失败
+    mjpeg.on("stream_create_error", function (err) {
+        alert("create stream failed!");
+    });
+
+    //接收到其他用户的视频流
+    mjpeg.on('add_stream', function (windowId, streamUrl) {
+        var image = document.getElementById("video" + windowId);
+        if (image != null) {
+            image.src = streamUrl;
+        }
+    });
+
+    //删除其他用户
+    mjpeg.on('remove_stream', function (windowId) {
+        var image = document.getElementById("video" + windowId);
+        if (image != null) {
+            image.src = "images/transparency.png";
+        }
+    });
+
+    //连接WebSocket服务器
+    mjpeg.connect("wss://liveserver.local:7443", getQueryVariable("room"), getQueryVariable("window"));
+</script>
+
+</html>

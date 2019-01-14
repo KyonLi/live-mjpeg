@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>彩播</title>
+</head>
+
+<body style="padding-left: 10%; padding-right: 10%">
+    <script type="text/javascript">
+        function goCaster() {
+            if (document.getElementById("caster_room").value) {
+                var url = "caster.html?room=" + document.getElementById("caster_room").value + "&window=0";
+                window.location.href = url;
+            } else {
+                alert("请输入房间号");
+            }
+        }
+
+        function goOperator() {
+            if (document.getElementById("operator_room").value && document.getElementById("operator_window").value) {
+                var url = "operator.html?room=" + document.getElementById("operator_room").value + "&window=" + document.getElementById("operator_window").value;
+                window.location.href = url;
+            } else {
+                alert("请输入房间号和票口号");
+            }
+        }
+    </script>
+
+    <h1 style="text-align: center">欢迎来到彩播直播平台</h1>
+    <h2>我是主播</h2>
+    <form>
+        房间号: <input id="caster_room" type="text" name="room"><br>
+        <input type="button" value="前往" onclick="goCaster()">
+    </form>
+    <h2>我是刮票员</h2>
+    <form>
+        房间号: <input id="operator_room" type="text" name="room"><br>
+        票口号: <input id="operator_window" type="text" name="window"><br>
+        <input type="button" value="前往" onclick="goOperator()">
+    </form>
+</body>
+
+</html>
